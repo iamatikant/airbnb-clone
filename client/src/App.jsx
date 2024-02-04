@@ -6,14 +6,18 @@ import LoginPage from "./pages/LoginPage";
 import Layout from "./Layout";
 import RegisterPage from "./pages/RegisterPage";
 
-export const baseUrl = "http://localhost:4000";
+export const baseUrl = "http://127.0.0.1:4000";
 
 window.originalFetch = window.fetch;
 
 window.fetch = async (url, options) => {
-  return window.originalFetch(`${baseUrl}${url}`, options);
+  const defaultOptions = {credentials: 'include'};
+  return window.originalFetch(`${baseUrl}${url}`, {...defaultOptions, ...options});
 };
 
+
+// user: booking
+// MongoDBkey: DCcAqsnXmhLiesbe
 
 function App() {
   return (

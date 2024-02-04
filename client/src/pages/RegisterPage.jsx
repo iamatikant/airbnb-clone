@@ -8,14 +8,25 @@ export default function RegisterPage() {
 
   async function registerUser(event) {
     event.preventDefault();
-    const response = await fetch("/register", {
-      method: "POST",
-      body: JSON.stringify({ name, email, password }),
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-    console.log("response: ", await response.json());
+    if(name === '' || email === '' || password === '') {
+      alert('Please fill all the required fields');
+      return;
+    }
+    try {
+      const response = await fetch("/register", {
+        method: "POST",
+        body: JSON.stringify({ name, email, password }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      if(!response.ok) {
+        throw new Error(await response.json());
+      }
+      alert('User registered successfully', response);
+    } catch(e) {
+      alert('Some error occurred, make sure your email is unique', e);
+    }
   }
 
   return (
