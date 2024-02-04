@@ -8,12 +8,21 @@ const UserModel = require("./models/User");
 
 const app = express();
 app.use(express.json());
-app.use(
-  cors({
-    credentials: true,
-    // origin: "*",
-  })
-);
+
+const whitelist = ['http://localhost:5173']; // Add your localhost URL
+
+const corsOptions = {
+  origin: (origin, callback) => {
+    if (whitelist.includes(origin) || !origin) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true
+};
+
+app.use(cors(corsOptions));
 
 const bcryptSalt = bcrypt.genSaltSync(10);
 const jwtSecret = 'this_is_jwt_secret';
@@ -50,8 +59,14 @@ app.post("/login", async(req, res) => {
     return;
   }
   try{
-    const token = await jwt.sign({ email: user.email, id: user._id }, jwtSecret)
-    res.status(200).cookie('token', token).json('pass ok');
+    // const token = await jwt.sign({ email: user.email, id: user._id }, jwtSecret);
+    jwt.sign({ email: user.email, id: user._id }, jwtSecret, {}, (err, token) => {
+      if(err) {
+        throw err;
+      }
+      res.cookie('token', token).json('pass ok');
+    })
+    // res.status(200).cookie('token', token).json('pass ok');
     
   } catch (e) {
     res.json(401).json('cookie not set');
