@@ -1,0 +1,8 @@
+{
+  "cSpell.words": [
+    "tailwindcss"
+  ],
+  "editor.formatOnSave": true,
+  "editor.formatOnPaste": true,
+  "javascript.suggest.autoImports": true,
+}
