@@ -5,6 +5,7 @@ import IndexPage from "./pages/IndexPage";
 import LoginPage from "./pages/LoginPage";
 import Layout from "./Layout";
 import RegisterPage from "./pages/RegisterPage";
+import axios from 'axios';
 
 export const baseUrl = "http://127.0.0.1:4000";
 
@@ -15,6 +16,7 @@ window.fetch = async (url, options) => {
   return window.originalFetch(`${baseUrl}${url}`, {...defaultOptions, ...options});
 };
 
+axios.defaults.withCredentials = true;
 
 // user: booking
 // MongoDBkey: DCcAqsnXmhLiesbe

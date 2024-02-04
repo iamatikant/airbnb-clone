@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { Link, Navigate } from "react-router-dom";
 
+import axios from 'axios';
+
 export default function LoginPage() {
   const [email, setEmail] = useState("sujesh@gmail.com");
   const [password, setPassword] = useState("password");
@@ -8,18 +10,25 @@ export default function LoginPage() {
 
   const handleLoginSubmit = async (event) => {
     event.preventDefault();
+    // try {
+    //   const response = await fetch('/login', {
+    //     method: 'POST',
+    //     body: JSON.stringify({ email, password }),
+    //     headers: {
+    //       "Content-Type": "application/json",
+    //     },
+    //   })
+    //   alert('Login successful', await response.json());
+    //   setRedirect(true);
+    // } catch(e) {
+    //   alert('Login failed', e);
+    // }
     try {
-      const response = await fetch('/login', {
-        method: 'POST',
-        body: JSON.stringify({ email, password }),
-        headers: {
-          "Content-Type": "application/json",
-        },
-      })
-      alert('Login successful', await response.json());
+      await axios.post('http://localhost:4000/login', {email, password});
+      alert('login successful');
       setRedirect(true);
     } catch(e) {
-      alert('Login failed', e);
+      alert('login failed');
     }
   }
 
