@@ -6,6 +6,15 @@ import LoginPage from "./pages/LoginPage";
 import Layout from "./Layout";
 import RegisterPage from "./pages/RegisterPage";
 
+export const baseUrl = "http://localhost:4000";
+
+window.originalFetch = window.fetch;
+
+window.fetch = async (url, options) => {
+  return window.originalFetch(`${baseUrl}${url}`, options);
+};
+
+
 function App() {
   return (
     <Routes>
