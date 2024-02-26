@@ -1,40 +1,51 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { Link, Navigate } from "react-router-dom";
-
-import axios from 'axios';
+import { UserContext } from "../UserContext";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("sujesh@gmail.com");
   const [password, setPassword] = useState("password");
   const [redirect, setRedirect] = useState(false);
+  const { setUser } = useContext(UserContext);
 
   const handleLoginSubmit = async (event) => {
     event.preventDefault();
-    // try {
-    //   const response = await fetch('/login', {
-    //     method: 'POST',
-    //     body: JSON.stringify({ email, password }),
-    //     headers: {
-    //       "Content-Type": "application/json",
-    //     },
-    //   })
-    //   alert('Login successful', await response.json());
-    //   setRedirect(true);
-    // } catch(e) {
-    //   alert('Login failed', e);
-    // }
     try {
-      await axios.post('http://localhost:4000/login', {email, password});
-      alert('login successful');
-      setRedirect(true);
-    } catch(e) {
-      alert('login failed');
+      const response = await fetch("/login", {
+        method: "POST",
+        body: JSON.stringify({ email, password }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      const jsonResponse = await response.json();
+      if (response.ok) {
+        setUser(jsonResponse);
+        alert("Login successful");
+        setRedirect(true);
+      } else throw new Error(jsonResponse);
+    } catch (e) {
+      alert(e);
     }
-  }
 
-  if(redirect) {
+    //using axios
+
+    // try {
+    //   const { data } = await axios.post("/login", {
+    //     email,
+    //     password,
+    //   });
+    //   alert("login successful");
+    //   setUser(data);
+    //   setRedirect(true);
+    // } catch (e) {
+    //   alert("login failed");
+    // }
+  };
+
+  if (redirect) {
     // setRedirect(false);
-    return <Navigate to={'/'} />
+    return <Navigate to={"/"} />;
   }
 
   return (
@@ -56,6 +67,7 @@ export default function LoginPage() {
           />
           <button className="primary">Login</button>
           <div className="text-gray-300 py-4 text-center">
+            {/* eslint-disable-next-line react/no-unescaped-entities*/}
             Don't have an account yet?{" "}
             <Link to="/register" className="underline text-black">
               Register

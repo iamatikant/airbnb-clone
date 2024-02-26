@@ -1,31 +1,32 @@
 const express = require("express");
-require('dotenv').config();
-const bcrypt = require('bcryptjs');
+require("dotenv").config();
+const bcrypt = require("bcryptjs");
 const cors = require("cors");
-const jwt = require('jsonwebtoken');
+const jwt = require("jsonwebtoken");
 const { default: mongoose } = require("mongoose");
-const UserModel = require("./models/User");
+const User = require("./models/User");
+const cookieParser = require("cookie-parser");
 
 const app = express();
 app.use(express.json());
+app.use(cookieParser());
 
-const whitelist = ['http://localhost:5173']; // Add your localhost URL
-
+const whitelist = ["http://localhost:5173"]; // Add your localhost URL
 const corsOptions = {
   origin: (origin, callback) => {
     if (whitelist.includes(origin) || !origin) {
       callback(null, true);
     } else {
-      callback(new Error('Not allowed by CORS'));
+      callback(new Error("Not allowed by CORS"));
     }
   },
-  credentials: true
+  credentials: true,
 };
 
 app.use(cors(corsOptions));
 
 const bcryptSalt = bcrypt.genSaltSync(10);
-const jwtSecret = 'this_is_jwt_secret';
+const jwtSecret = "this_is_jwt_secret";
 
 mongoose.connect(process.env.MONGO_URL);
 
@@ -38,41 +39,66 @@ app.get("/test", (req, res) => {
 app.post("/register", async (req, res) => {
   try {
     const { name, email, password } = req.body;
-    const user = await UserModel.create({name, email, password: bcrypt.hashSync(password, bcryptSalt) });
+    const user = await User.create({
+      name,
+      email,
+      password: bcrypt.hashSync(password, bcryptSalt),
+    });
     res.json(user);
-  } catch(e) {
+  } catch (e) {
     res.status(422).json(e);
   }
 });
 
-app.post("/login", async(req, res) => {
-  const {email, password} = req.body;
+app.post("/login", async (req, res) => {
+  const { email, password } = req.body;
   console.log(email, password, "test");
-  const user = await UserModel.findOne({email});
-  if(!user) {
-    res.status(422).json('Invalid user');
+  const user = await User.findOne({ email });
+  if (!user) {
+    res.status(422).json("Invalid user");
     return;
   }
   const isValidPassword = bcrypt.compareSync(password, user.password);
-  if(!isValidPassword) {
-    res.status(422).json('Invalid password');
+  if (!isValidPassword) {
+    res.status(422).json("Invalid password");
     return;
   }
-  try{
+  try {
     // const token = await jwt.sign({ email: user.email, id: user._id }, jwtSecret);
-    jwt.sign({ email: user.email, id: user._id }, jwtSecret, {}, (err, token) => {
-      if(err) {
+    jwt.sign(
+      { email: user.email, id: user._id },
+      jwtSecret,
+      {},
+      (err, token) => {
+        if (err) {
+          throw err;
+        }
+        res.cookie("token", token).json(user);
+      }
+    );
+  } catch (e) {
+    res.json(401).json("cookie not set");
+  }
+});
+
+app.get("/profile", (req, res) => {
+  const { token } = req.cookies;
+  if (token) {
+    jwt.verify(token, jwtSecret, {}, async (err, userData) => {
+      if (err) {
         throw err;
       }
-      res.cookie('token', token).json('pass ok');
-    })
-    // res.status(200).cookie('token', token).json('pass ok');
-    
-  } catch (e) {
-    res.json(401).json('cookie not set');
+      const { name, email, _id } = await User.findById(userData.id);
+      res.json({ name, email, _id });
+    });
+  } else {
+    res.json(null);
   }
-})
+  // res.json("User info");
+});
 
-
+app.post("/logout", (req, res) => {
+  res.cookie("token", "").json("true");
+});
 
 app.listen(4000);
