@@ -25,9 +25,11 @@ export default function AccountPage() {
   }
 
   const linkClasses = (type = null) => {
-    let classes = "px-6 py-2 inline-flex gap-2";
+    let classes = "px-6 py-2 inline-flex gap-2 rounded-full";
     if (type === subpage) {
-      classes += " bg-primary rounded-full text-white";
+      classes += " bg-primary text-white";
+    } else {
+      classes += " bg-gray-200";
     }
     return classes;
   };
@@ -35,7 +37,9 @@ export default function AccountPage() {
   const logout = async () => {
     await fetch("/logout", {
       method: "POST",
-      "Content-Type": "application/json",
+      headers: {
+        "Content-Type": "application/json",
+      },
     });
     setRedirect("/");
     setUser(null);
@@ -43,7 +47,7 @@ export default function AccountPage() {
 
   return (
     <div>
-      <nav className="w-full flex justify-center gap-2 mt-8 mb-8">
+      <nav className="w-full flex justify-center gap-1 mt-8 mb-8 gap-2">
         <Link className={linkClasses("profile")} to={"/account"}>
           <svg
             xmlns="http://www.w3.org/2000/svg"

@@ -6,10 +6,15 @@ const jwt = require("jsonwebtoken");
 const { default: mongoose } = require("mongoose");
 const User = require("./models/User");
 const cookieParser = require("cookie-parser");
+const imageDownloader = require("image-downloader");
+const multer = require("multer");
+const fs = require("fs");
 
 const app = express();
 app.use(express.json());
 app.use(cookieParser());
+
+app.use("/uploads", express.static(__dirname + "/uploads"));
 
 const whitelist = ["http://localhost:5173"]; // Add your localhost URL
 const corsOptions = {
@@ -99,6 +104,35 @@ app.get("/profile", (req, res) => {
 
 app.post("/logout", (req, res) => {
   res.cookie("token", "").json("true");
+});
+
+app.post("/upload-by-link", async (req, res) => {
+  const { link } = req.body;
+  const newName = "photos" + Date.now() + ".jpg";
+  try {
+    const response = await imageDownloader.image({
+      url: link,
+      dest: __dirname + "/uploads/" + newName,
+    });
+    res.json({ newName });
+  } catch (err) {
+    res.status(422).json(err);
+  }
+});
+
+const photosMiddleware = multer({ dest: "uploads/" });
+app.post("/upload", photosMiddleware.array("photos", 100), (req, res) => {
+  const uploadedFiles = [];
+  for (let i = 0; i < req.files.length; i++) {
+    const { path, originalname } = req.files[i];
+    const parts = originalname.split(".");
+    const ext = parts[parts.length - 1];
+    const newPath = path + "." + ext;
+    fs.renameSync(path, newPath);
+    uploadedFiles.push(newPath.replace("uploads/", ""));
+  }
+  console.log(uploadedFiles);
+  res.json(uploadedFiles);
 });
 
 app.listen(4000);
