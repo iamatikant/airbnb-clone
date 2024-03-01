@@ -5,6 +5,7 @@ const cors = require("cors");
 const jwt = require("jsonwebtoken");
 const { default: mongoose } = require("mongoose");
 const User = require("./models/User");
+const Places = require("./models/Place");
 const cookieParser = require("cookie-parser");
 const imageDownloader = require("image-downloader");
 const multer = require("multer");
@@ -13,6 +14,7 @@ const fs = require("fs");
 const app = express();
 app.use(express.json());
 app.use(cookieParser());
+const photosMiddleware = multer({ dest: "uploads/" });
 
 app.use("/uploads", express.static(__dirname + "/uploads"));
 
@@ -114,13 +116,12 @@ app.post("/upload-by-link", async (req, res) => {
       url: link,
       dest: __dirname + "/uploads/" + newName,
     });
-    res.json({ newName });
+    res.json(newName);
   } catch (err) {
     res.status(422).json(err);
   }
 });
 
-const photosMiddleware = multer({ dest: "uploads/" });
 app.post("/upload", photosMiddleware.array("photos", 100), (req, res) => {
   const uploadedFiles = [];
   for (let i = 0; i < req.files.length; i++) {
@@ -131,8 +132,63 @@ app.post("/upload", photosMiddleware.array("photos", 100), (req, res) => {
     fs.renameSync(path, newPath);
     uploadedFiles.push(newPath.replace("uploads/", ""));
   }
-  console.log(uploadedFiles);
   res.json(uploadedFiles);
+});
+
+app.post("/places", async (req, res) => {
+  const {
+    title,
+    address,
+    addedPhotos,
+    description,
+    perks,
+    extraInfo,
+    checkIn,
+    checkOut,
+    maxGuests,
+    price,
+  } = req.body;
+
+  const { token } = req.cookies;
+
+  jwt.verify(token, jwtSecret, {}, async (err, userData) => {
+    if (err) {
+      throw err;
+    }
+    const placeDoc = await Places.create({
+      owner: userData.id,
+      title,
+      address,
+      photos: addedPhotos,
+      description,
+      perks,
+      extraInfo,
+      checkIn,
+      checkOut,
+      maxGuest: maxGuests,
+      price,
+    });
+    res.json(placeDoc);
+  });
+});
+
+app.get("/places", async (req, res) => {
+  const { token } = req.cookies;
+
+  if (token) {
+    try {
+      jwt.verify(token, jwtSecret, {}, async (err, userData) => {
+        if (err) {
+          throw err;
+        }
+        const places = await Places.findById(userData.id);
+        console.log("userData: ", places);
+        res.json(places);
+      });
+    } catch (e) {
+      res.status(422).json(e);
+    }
+  }
 });
 
 app.listen(4000);
