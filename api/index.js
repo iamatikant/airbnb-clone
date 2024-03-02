@@ -5,7 +5,7 @@ const cors = require("cors");
 const jwt = require("jsonwebtoken");
 const { default: mongoose } = require("mongoose");
 const User = require("./models/User");
-const Places = require("./models/Place");
+const Place = require("./models/Place");
 const cookieParser = require("cookie-parser");
 const imageDownloader = require("image-downloader");
 const multer = require("multer");
@@ -90,18 +90,21 @@ app.post("/login", async (req, res) => {
 
 app.get("/profile", (req, res) => {
   const { token } = req.cookies;
-  if (token) {
-    jwt.verify(token, jwtSecret, {}, async (err, userData) => {
-      if (err) {
-        throw err;
-      }
-      const { name, email, _id } = await User.findById(userData.id);
-      res.json({ name, email, _id });
-    });
-  } else {
-    res.json(null);
+  try {
+    if (token) {
+      jwt.verify(token, jwtSecret, {}, async (err, userData) => {
+        if (err) {
+          throw err;
+        }
+        const { name, email, _id } = await User.findById(userData.id);
+        res.json({ name, email, _id });
+      });
+    } else {
+      res.json(err);
+    }
+  } catch (err) {
+    res.json(err);
   }
-  // res.json("User info");
 });
 
 app.post("/logout", (req, res) => {
@@ -155,7 +158,7 @@ app.post("/places", async (req, res) => {
     if (err) {
       throw err;
     }
-    const placeDoc = await Places.create({
+    const placeDoc = await Place.create({
       owner: userData.id,
       title,
       address,
@@ -172,7 +175,7 @@ app.post("/places", async (req, res) => {
   });
 });
 
-app.get("/places", async (req, res) => {
+app.get("/user-places", async (req, res) => {
   const { token } = req.cookies;
 
   if (token) {
@@ -181,14 +184,72 @@ app.get("/places", async (req, res) => {
         if (err) {
           throw err;
         }
-        const places = await Places.findById(userData.id);
-        console.log("userData: ", places);
+        const { id } = userData;
+        const places = await Place.find({ owner: id });
         res.json(places);
       });
     } catch (e) {
       res.status(422).json(e);
     }
   }
+});
+
+app.get("/places/:id", async (req, res) => {
+  const id = req.params.id;
+  try {
+    const place = await Place.findById(id);
+    if (!place) {
+      res.status(404).json({ message: "Place not found" });
+    }
+    res.json(place);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.put("/places", async (req, res) => {
+  const { token } = req.cookies;
+  const {
+    id,
+    title,
+    address,
+    addedPhotos,
+    description,
+    perks,
+    extraInfo,
+    checkIn,
+    checkOut,
+    maxGuests,
+    price,
+  } = req.body;
+
+  jwt.verify(token, jwtSecret, {}, async (err, userData) => {
+    if (err) {
+      throw err;
+    }
+
+    const placeDoc = await Place.findById(id);
+    if (!placeDoc) {
+      res.status(500).json({ message: "Place not found" });
+    }
+
+    if (userData.id === placeDoc.owner.toJSON()) {
+      placeDoc.set({
+        title,
+        address,
+        photos: addedPhotos,
+        description,
+        perks,
+        extraInfo,
+        checkIn,
+        checkOut,
+        maxGuest: maxGuests,
+        price,
+      });
+    }
+    await placeDoc.save();
+    res.json("ok");
+  });
 });
 
 app.listen(4000);

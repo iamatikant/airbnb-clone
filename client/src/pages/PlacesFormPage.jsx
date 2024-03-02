@@ -1,8 +1,8 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import PhotosUploader from "../PhotosUploader";
 import Perks from "../Perks";
 import AccountNav from "./AccountNav";
-import { Navigate } from "react-router-dom";
+import { Navigate, useParams } from "react-router-dom";
 
 export default function PlacesFormPage() {
   const [title, setTitle] = useState("");
@@ -16,6 +16,34 @@ export default function PlacesFormPage() {
   const [maxGuests, setMaxGuests] = useState(1);
   const [price, setPrice] = useState(100);
   const [redirect, setRedirect] = useState(false);
+
+  const params = useParams();
+  const id = params.id;
+
+  useEffect(() => {
+    const getPlace = async () => {
+      const response = await fetch("/places/" + id, {
+        method: "GET",
+      });
+      if (!response.ok) {
+        console.log(response);
+      }
+      const data = await response.json();
+      setTitle(data.title);
+      setAddress(data.address);
+      setAddedPhotos(data.photos);
+      setDescription(data.description);
+      setPerks(data.perks);
+      setExtraInfo(data.extraInfo);
+      setCheckIn(data.checkIn);
+      setCheckOut(data.checkOut);
+      setMaxGuests(data.maxGuests);
+      setPrice(data.price);
+    };
+    if (id) {
+      getPlace();
+    }
+  }, [id]);
 
   function inputHeader(text) {
     return <h2 className="text-2xl mt-4">{text}</h2>;
@@ -32,7 +60,7 @@ export default function PlacesFormPage() {
     );
   }
 
-  async function addNewPlace(ev) {
+  async function savePlace(ev) {
     ev.preventDefault();
     const placeData = {
       title,
@@ -46,21 +74,41 @@ export default function PlacesFormPage() {
       maxGuests,
       price,
     };
-    try {
-      const response = await fetch("/places", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(placeData),
-      });
-      if (!response.ok) {
-        throw new Error(await response.json());
+
+    if (id) {
+      try {
+        const response = await fetch("/places", {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ id, ...placeData }),
+        });
+        if (!response.ok) {
+          throw new Error(await response.json());
+        }
+        setRedirect(true);
+      } catch (err) {
+        console.log(err);
       }
-    } catch (e) {
-      console.log(e);
+    } else {
+      //post request
+      try {
+        const response = await fetch("/places", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(placeData),
+        });
+        if (!response.ok) {
+          throw new Error(await response.json());
+        }
+      } catch (e) {
+        console.log(e);
+      }
+      setRedirect(true);
     }
-    setRedirect(true);
   }
 
   if (redirect) {
@@ -70,7 +118,7 @@ export default function PlacesFormPage() {
   return (
     <div>
       <AccountNav />
-      <form onSubmit={addNewPlace}>
+      <form onSubmit={savePlace}>
         {preInput(
           "Title",
           "Title for your place. should be short and catchy as in advertisement"

@@ -27,20 +27,6 @@ export default function LoginPage() {
     } catch (e) {
       alert(e);
     }
-
-    //using axios
-
-    // try {
-    //   const { data } = await axios.post("/login", {
-    //     email,
-    //     password,
-    //   });
-    //   alert("login successful");
-    //   setUser(data);
-    //   setRedirect(true);
-    // } catch (e) {
-    //   alert("login failed");
-    // }
   };
 
   if (redirect) {
