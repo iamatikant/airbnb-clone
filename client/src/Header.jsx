@@ -49,6 +49,7 @@ export default function Header() {
         to={user ? "/account" : "/login"}
         className="flex border items-center border-gray-300 gap-2 rounded-full px-4 py-2"
       >
+        {console.log("user in header: ", user)}
         <svg
           xmlns="http://www.w3.org/2000/svg"
           fill="none"

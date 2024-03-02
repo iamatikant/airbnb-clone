@@ -1,15 +1,19 @@
 import { Link } from "react-router-dom";
 import AccountNav from "./AccountNav";
 import { useEffect, useState } from "react";
+import PlaceImg from "../PlaceImg";
 
 export const PlacesPage = () => {
   const [places, setPlaces] = useState([]);
 
   useEffect(() => {
     const fetchPlaces = async () => {
-      const response = await fetch("/places", {
+      const response = await fetch("/user-places", {
         method: "GET",
       });
+      if (!response.ok) {
+        console.log(await response.json());
+      }
 
       if (response.ok) {
         const fetchedPlaces = await response.json();
@@ -23,7 +27,11 @@ export const PlacesPage = () => {
     <div>
       <AccountNav />
       <div className="text-center">
-        list of all places added
+        <ul>
+          {places.map((place) => {
+            return <li key={place.title}>{place.title}</li>;
+          })}
+        </ul>
         <br />
         <Link
           className="inline-flex gap-1 bg-primary text-white py-2 px-6 rounded-full"
@@ -45,6 +53,24 @@ export const PlacesPage = () => {
           </svg>
           Add new place
         </Link>
+      </div>
+      <div className="mt-4">
+        {places.length > 0 &&
+          places.map((place) => (
+            <Link
+              key={place.id}
+              to={"/account/places/" + place._id}
+              className="flex cursor-pointer gap-4 bg-gray-100 p-4 rounded-2xl"
+            >
+              <div className="flex w-32 h-32 bg-gray-300 shrink-0">
+                <PlaceImg place={place} />
+              </div>
+              <div className="grow-0 shrink">
+                <h2 className="text-xl">{place.title}</h2>
+                <p className="text-sm mt-2">{place.description}</p>
+              </div>
+            </Link>
+          ))}
       </div>
     </div>
   );

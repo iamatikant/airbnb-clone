@@ -11,7 +11,9 @@ export function UserContextProvider({ children }) {
   useEffect(() => {
     if (!user) {
       axios.get("/profile").then(({ data }) => {
-        setUser(data);
+        if (Object.keys(data).length > 0) {
+          setUser(data);
+        }
         setReady(true);
       });
     }

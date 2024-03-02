@@ -8,7 +8,11 @@ export default function ProfilePage() {
   const { user, ready, setUser } = useContext(UserContext);
   const [redirect, setRedirect] = useState(null);
 
-  let { subpage } = useParams();
+  // let { subpage } = useParams();
+  let params = useParams();
+  console.log("params: ", params);
+  let subpage = params?.subpage;
+
   if (subpage === undefined) {
     subpage = "profile";
   }

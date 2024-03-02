@@ -16,12 +16,26 @@ export const baseUrl = "http://localhost:4000";
 window.originalFetch = window.fetch;
 
 window.fetch = async (url, options) => {
-  const defaultOptions = { credentials: "include" };
+  const defaultOptions = {
+    credentials: "include",
+  };
   return window.originalFetch(`${baseUrl}${url}`, {
     ...defaultOptions,
     ...options,
   });
 };
+
+// window.originalFetch = window.fetch;
+
+// window.fetch = async (url, options) => {
+//   const defaultOptions = {
+//     credentials: "include",
+//   };
+//   return window.originalFetch(`${baseUrl}${url}`, {
+//     ...defaultOptions,
+//     ...options,
+//   });
+// };
 
 axios.defaults.baseURL = "http://localhost:4000";
 axios.defaults.withCredentials = true;
@@ -40,6 +54,7 @@ function App() {
           <Route path="/account" element={<ProfilePage />} />
           <Route path="/account/places" element={<PlacesPage />} />
           <Route path="/account/places/new" element={<PlacesFormPage />} />
+          <Route path="/account/places/:id" element={<PlacesFormPage />} />
         </Route>
       </Routes>
     </UserContextProvider>
