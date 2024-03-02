@@ -252,4 +252,15 @@ app.put("/places", async (req, res) => {
   });
 });
 
+app.get("/places", async (req, res) => {
+  try {
+    const places = await Place.find();
+    res.json(places);
+  } catch (err) {
+    res
+      .status(500)
+      .json({ message: "Something went wrong while getting places", err });
+  }
+});
+
 app.listen(4000);
