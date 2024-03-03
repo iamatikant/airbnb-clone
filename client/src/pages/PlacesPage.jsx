@@ -60,7 +60,7 @@ export const PlacesPage = () => {
             <Link
               key={place.id}
               to={"/account/places/" + place._id}
-              className="flex cursor-pointer gap-4 bg-gray-100 p-4 rounded-2xl"
+              className="flex cursor-pointer gap-4 bg-gray-100 p-4 rounded-2xl mb-4"
             >
               <div className="flex w-32 h-32 bg-gray-300 shrink-0">
                 <PlaceImg place={place} />

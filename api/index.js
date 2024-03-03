@@ -6,6 +6,7 @@ const jwt = require("jsonwebtoken");
 const { default: mongoose } = require("mongoose");
 const User = require("./models/User");
 const Place = require("./models/Place");
+const Booking = require("./models/Booking");
 const cookieParser = require("cookie-parser");
 const imageDownloader = require("image-downloader");
 const multer = require("multer");
@@ -36,6 +37,15 @@ const bcryptSalt = bcrypt.genSaltSync(10);
 const jwtSecret = "this_is_jwt_secret";
 
 mongoose.connect(process.env.MONGO_URL);
+
+function getUserDataFromReq(req) {
+  return new Promise((resolve, reject) => {
+    jwt.verify(req.cookies.token, jwtSecret, {}, async (err, userData) => {
+      if (err) throw err;
+      resolve(userData);
+    });
+  });
+}
 
 app.get("/test", (req, res) => {
   res.json({
@@ -261,6 +271,33 @@ app.get("/places", async (req, res) => {
       .status(500)
       .json({ message: "Something went wrong while getting places", err });
   }
+});
+
+app.post("/bookings", async (req, res) => {
+  const { checkIn, checkOut, numberOfGuests, name, phone, place, price } =
+    req.body;
+
+  const userData = await getUserDataFromReq(req);
+  try {
+    const booking = await Booking.create({
+      place,
+      checkIn,
+      checkOut,
+      name,
+      phone,
+      numberOfGuests,
+      price,
+      user: userData.id,
+    });
+    res.json(booking);
+  } catch (err) {
+    res.status(404).json(err);
+  }
+});
+
+app.get("/bookings", async (req, res) => {
+  const userData = await getUserDataFromReq(req);
+  res.json(await Booking.find({ user: userData.id }).populate("place"));
 });
 
 app.listen(4000);
