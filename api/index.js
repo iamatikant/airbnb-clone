@@ -217,7 +217,7 @@ app.get("/places/:id", async (req, res) => {
   }
 });
 
-/** Update an existing place */
+/** Update an existing place main commit */
 
 app.put("/places", async (req, res) => {
   const { token } = req.cookies;
