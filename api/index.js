@@ -217,6 +217,8 @@ app.get("/places/:id", async (req, res) => {
   }
 });
 
+/** Update an existing place */
+
 app.put("/places", async (req, res) => {
   const { token } = req.cookies;
   const {
