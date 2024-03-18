@@ -1,8 +1,7 @@
-import { useContext } from "react";
 import { Link } from "react-router-dom";
-import { UserContext } from "./UserContext";
+import { useSelector } from "react-redux";
 export default function Header() {
-  const { user } = useContext(UserContext);
+  const { user } = useSelector((state) => state.user);
   return (
     <header className="justify-between flex">
       <Link to="/" className="flex items-center gap-1">

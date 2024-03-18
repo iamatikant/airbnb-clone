@@ -1,12 +1,13 @@
-import { useContext, useState } from "react";
+import { useState } from "react";
 import { Link, Navigate } from "react-router-dom";
-import { UserContext } from "../UserContext";
+// import { UserContext } from "../UserContext";
+import { useDispatch } from "react-redux";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("sujesh@gmail.com");
   const [password, setPassword] = useState("password");
   const [redirect, setRedirect] = useState(false);
-  const { setUser } = useContext(UserContext);
+  const dispatch = useDispatch();
 
   const handleLoginSubmit = async (event) => {
     event.preventDefault();
@@ -20,7 +21,13 @@ export default function LoginPage() {
       });
       const jsonResponse = await response.json();
       if (response.ok) {
-        setUser(jsonResponse);
+        // setUser(jsonResponse);
+        dispatch({
+          type: "CHECK_USER",
+          payload: {
+            user: jsonResponse,
+          },
+        });
         alert("Login successful");
         setRedirect(true);
       } else throw new Error(jsonResponse);

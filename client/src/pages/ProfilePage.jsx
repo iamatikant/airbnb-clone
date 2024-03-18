@@ -1,14 +1,15 @@
-import { useContext, useState } from "react";
-import { UserContext } from "../UserContext";
+import { useState } from "react";
 import { Navigate, useParams } from "react-router-dom";
 import { PlacesPage } from "./PlacesPage";
 import AccountNav from "./AccountNav";
+import { useDispatch, useSelector } from "react-redux";
+import { updateUser } from "../react-redux/actionCreators";
 
 export default function ProfilePage() {
-  const { user, ready, setUser } = useContext(UserContext);
+  const { user, ready } = useSelector((state) => state.user);
+  const dispatch = useDispatch();
   const [redirect, setRedirect] = useState(null);
 
-  // let { subpage } = useParams();
   let params = useParams();
   console.log("params: ", params);
   let subpage = params?.subpage;
@@ -37,7 +38,7 @@ export default function ProfilePage() {
       },
     });
     setRedirect("/");
-    setUser(null);
+    dispatch(updateUser({ user: null }));
   };
 
   return (

@@ -1,9 +1,10 @@
 /* eslint-disable react/prop-types */
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { differenceInCalendarDays } from "date-fns";
 import axios from "axios";
 import { Navigate } from "react-router-dom";
-import { UserContext } from "./UserContext.jsx";
+import { useDispatch, useSelector } from "react-redux";
+import { updateBooking } from "./react-redux/actionCreators";
 
 export default function BookingWidget({ place }) {
   const [checkIn, setCheckIn] = useState("");
@@ -12,7 +13,9 @@ export default function BookingWidget({ place }) {
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [redirect, setRedirect] = useState("");
-  const { user } = useContext(UserContext);
+  const { user } = useSelector((state) => state.user);
+  const { booking } = useSelector((state) => state.booking);
+  const dispatch = useDispatch();
 
   useEffect(() => {
     if (user) {
@@ -39,6 +42,18 @@ export default function BookingWidget({ place }) {
       price: numberOfNights * place.price,
     });
     const bookingId = response.data._id;
+    dispatch(
+      updateBooking({
+        bookingId,
+        checkIn,
+        checkOut,
+        numberOfGuests,
+        name,
+        phone,
+        place: place._id,
+        price: numberOfNights * place.price,
+      })
+    );
     setRedirect(`/account/bookings/${bookingId}`);
   }
 
