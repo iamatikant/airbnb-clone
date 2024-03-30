@@ -11,7 +11,7 @@ const initialBooking = {
 };
 
 export const bookingReducer = (state = initialBooking, action) => {
-  console.log("state in booking reducer: ", state);
+  console.log("state in booking reducer: ", action.payload);
   switch (action.type) {
     case "UPDATE_BOOKING":
       return {
