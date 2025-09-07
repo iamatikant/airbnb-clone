@@ -24,34 +24,30 @@ This project demonstrates my ability to build scalable, user-friendly web applic
 
 📂 Project Structure
 src/
- ┣ components/   # Reusable UI components (Navbar, Card, Modal, etc.)
- ┣ pages/        # Page-level components (Home, Search, Booking, Wishlist)
- ┣ context/      # Global state providers
- ┣ hooks/        # Custom React hooks
- ┣ utils/        # Helper functions
- ┣ App.js        # Root app component
- ┗ index.js      # Entry point
+┣ components/ # Reusable UI components (Navbar, Card, Modal, etc.)
+┣ pages/ # Page-level components (Home, Search, Booking, Wishlist)
+┣ context/ # Global state providers
+┣ hooks/ # Custom React hooks
+┣ utils/ # Helper functions
+┣ App.js # Root app component
+┗ index.js # Entry point
 
 ⚙️ Getting Started
 Clone the repository
+
 1. git clone https://github.com/your-username/airbnb-clone.git
 2. cd airbnb-clone
 
-Environment Variables
-3. Create a .env file in the root directory.
-4. Copy the contents of .env and replace the placeholders with your actual credentials.
+Environment Variables 3. Update .env file in the api directory with your mongo db url.
 
 Example .env:
 MONGODB_URI=mongodb+srv://<username>:<password>@cluster0.mongodb.net/airbnb-clone
 PORT=3000
 
-Install dependencies
-5. npm install
+Install dependencies 5. npm install
 
-Start the development server
-6. npm start
-7. Visit http://localhost:5173
- 🎉
+Start the development server 6. npm start 7. Visit http://localhost:5173
+🎉
 
 🔮 Future Improvements
 
