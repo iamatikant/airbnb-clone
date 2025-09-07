@@ -37,13 +37,20 @@ Clone the repository
 1. git clone https://github.com/your-username/airbnb-clone.git
 2. cd airbnb-clone
 
+Environment Variables
+3. Create a .env file in the root directory.
+4. Copy the contents of .env and replace the placeholders with your actual credentials.
+
+Example .env:
+MONGODB_URI=mongodb+srv://<username>:<password>@cluster0.mongodb.net/airbnb-clone
+PORT=3000
+
 Install dependencies
-3. npm install
+5. npm install
 
 Start the development server
-4. npm start
-
-5. Visit http://localhost:3000
+6. npm start
+7. Visit http://localhost:5173
  🎉
 
 🔮 Future Improvements
