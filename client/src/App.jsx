@@ -6,6 +6,7 @@ import LoginPage from "./pages/LoginPage";
 import Layout from "./Layout";
 import RegisterPage from "./pages/RegisterPage";
 import axios from "axios";
+// this is s mock commit
 import { UserContextProvider } from "./UserContext";
 import ProfilePage from "./pages/ProfilePage";
 import { PlacesPage } from "./pages/PlacesPage";
