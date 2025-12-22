@@ -1,16 +1,15 @@
 import { useContext, useState } from "react";
-import { UserContext } from "../UserContext";
 import { Navigate, useParams } from "react-router-dom";
+import { UserContext } from "../UserContext";
 import { PlacesPage } from "./PlacesPage";
 import AccountNav from "./AccountNav";
+import { Box, Typography, Button, CircularProgress } from "@mui/material";
 
 export default function ProfilePage() {
   const { user, ready, setUser } = useContext(UserContext);
   const [redirect, setRedirect] = useState(null);
 
-  // let { subpage } = useParams();
-  let params = useParams();
-  console.log("params: ", params);
+  const params = useParams();
   let subpage = params?.subpage;
 
   if (subpage === undefined) {
@@ -18,7 +17,18 @@ export default function ProfilePage() {
   }
 
   if (!ready) {
-    return "Loading...";
+    return (
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          minHeight: "40vh",
+        }}
+      >
+        <CircularProgress />
+      </Box>
+    );
   }
 
   if (ready && !user && !redirect) {
@@ -41,17 +51,29 @@ export default function ProfilePage() {
   };
 
   return (
-    <div>
+    <Box>
       <AccountNav />
-      {subpage === "profile" && (
-        <div className="text-center max-w-lg mx-auto">
-          Logged in as {user.name} ({user.email}) <br />
-          <button className="primary max-w-sm mt-2" onClick={logout}>
+      {subpage === "profile" && user && (
+        <Box
+          sx={{
+            maxWidth: 480,
+            mx: "auto",
+            mt: 4,
+            textAlign: "center",
+          }}
+        >
+          <Typography variant="body1" gutterBottom>
+            Logged in as <strong>{user.name}</strong> ({user.email})
+          </Typography>
+          <Button
+            onClick={logout}
+            sx={{ mt: 2, maxWidth: 240, width: "100%" }}
+          >
             Logout
-          </button>
-        </div>
+          </Button>
+        </Box>
       )}
       {subpage === "places" && <PlacesPage />}
-    </div>
+    </Box>
   );
 }

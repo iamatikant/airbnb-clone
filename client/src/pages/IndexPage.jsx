@@ -1,13 +1,19 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import Image from "../Image.jsx";
+import {
+  Box,
+  Grid,
+  Card,
+  CardActionArea,
+  CardContent,
+  Typography,
+} from "@mui/material";
 
 export default function IndexPage() {
   const [places, setPlaces] = useState([]);
+
   useEffect(() => {
-    // axios.get("/places").then((response) => {
-    //   setPlaces(response.data);
-    // });
     const getPlaces = async () => {
       try {
         const response = await fetch("/places", {
@@ -30,26 +36,59 @@ export default function IndexPage() {
   }, []);
 
   return (
-    <div className="mt-8 grid gap-x-6 gap-y-8 grid-cols-2 md:grid-cols-3 lg:grid-cols-3">
-      {places.length > 0 &&
-        places.map((place) => (
-          <Link to={"/place/" + place._id} key={place.title}>
-            <div className="bg-gray-500 mb-2 rounded-2xl flex">
-              {place.photos?.[0] && (
-                <Image
-                  className="rounded-2xl object-cover aspect-square"
-                  src={place.photos?.[0]}
-                  alt=""
-                />
-              )}
-            </div>
-            <h2 className="font-bold">{place.address}</h2>
-            <h3 className="text-sm text-gray-500">{place.title}</h3>
-            <div className="mt-1">
-              <span className="font-bold">${place.price}</span> per night
-            </div>
-          </Link>
-        ))}
-    </div>
+    <Box mt={4}>
+      <Grid container spacing={3}>
+        {places.length > 0 &&
+          places.map((place) => (
+            <Grid item xs={12} sm={6} md={4} key={place._id}>
+              <Card>
+                <CardActionArea component={Link} to={`/place/${place._id}`}>
+                  {place.photos?.[0] && (
+                    <Box sx={{ position: "relative", paddingTop: "100%" }}>
+                      <Image
+                        src={place.photos[0]}
+                        alt={place.title}
+                        style={{
+                          position: "absolute",
+                          top: 0,
+                          left: 0,
+                          width: "100%",
+                          height: "100%",
+                          objectFit: "cover",
+                        }}
+                      />
+                    </Box>
+                  )}
+                  <CardContent>
+                    <Typography
+                      variant="subtitle2"
+                      color="text.secondary"
+                      noWrap
+                    >
+                      {place.address}
+                    </Typography>
+                    <Typography
+                      variant="subtitle1"
+                      fontWeight="bold"
+                      noWrap
+                      sx={{ mt: 0.5 }}
+                    >
+                      {place.title}
+                    </Typography>
+                    <Box mt={1}>
+                      <Typography variant="body2">
+                        <Box component="span" fontWeight="bold">
+                          ${place.price}
+                        </Box>{" "}
+                        per night
+                      </Typography>
+                    </Box>
+                  </CardContent>
+                </CardActionArea>
+              </Card>
+            </Grid>
+          ))}
+      </Grid>
+    </Box>
   );
 }

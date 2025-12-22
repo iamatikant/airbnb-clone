@@ -3,6 +3,14 @@ import PhotosUploader from "../PhotosUploader";
 import Perks from "../Perks";
 import AccountNav from "./AccountNav";
 import { Navigate, useParams } from "react-router-dom";
+import {
+  Box,
+  Typography,
+  TextField,
+  Button,
+  Grid,
+  Paper,
+} from "@mui/material";
 
 export default function PlacesFormPage() {
   const [title, setTitle] = useState("");
@@ -46,17 +54,25 @@ export default function PlacesFormPage() {
   }, [id]);
 
   function inputHeader(text) {
-    return <h2 className="text-2xl mt-4">{text}</h2>;
+    return (
+      <Typography variant="h6" sx={{ mt: 3 }}>
+        {text}
+      </Typography>
+    );
   }
   function inputDescription(text) {
-    return <p className="text-gray-500 text-sm">{text}</p>;
+    return (
+      <Typography variant="body2" color="text.secondary">
+        {text}
+      </Typography>
+    );
   }
   function preInput(header, description) {
     return (
-      <>
+      <Box mt={2}>
         {inputHeader(header)}
         {inputDescription(description)}
-      </>
+      </Box>
     );
   }
 
@@ -92,7 +108,6 @@ export default function PlacesFormPage() {
         console.log(err);
       }
     } else {
-      //post request
       try {
         const response = await fetch("/places", {
           method: "POST",
@@ -116,84 +131,121 @@ export default function PlacesFormPage() {
   }
 
   return (
-    <div>
+    <Box>
       <AccountNav />
-      <form onSubmit={savePlace}>
-        {preInput(
-          "Title",
-          "Title for your place. should be short and catchy as in advertisement"
-        )}
-        <input
-          type="text"
-          value={title}
-          onChange={(ev) => setTitle(ev.target.value)}
-          placeholder="title, for example: My lovely apt"
-        />
-        {preInput("Address", "Address to this place")}
-        <input
-          type="text"
-          value={address}
-          onChange={(ev) => setAddress(ev.target.value)}
-          placeholder="address"
-        />
-        {preInput("Photos", "more = better")}
-        <PhotosUploader addedPhotos={addedPhotos} onChange={setAddedPhotos} />
-        {preInput("Description", "description of the place")}
-        <textarea
-          value={description}
-          onChange={(ev) => setDescription(ev.target.value)}
-        />
-        {preInput("Perks", "select all the perks of your place")}
-        <div className="grid mt-2 gap-2 grid-cols-2 md:grid-cols-3 lg:grid-cols-6">
-          <Perks selected={perks} onChange={setPerks} />
-        </div>
-        {preInput("Extra info", "house rules, etc")}
-        <textarea
-          value={extraInfo}
-          onChange={(ev) => setExtraInfo(ev.target.value)}
-        />
-        {preInput(
-          "Check in&out times",
-          "add check in and out times, remember to have some time window for cleaning the room between guests"
-        )}
-        <div className="grid gap-2 grid-cols-2 md:grid-cols-4">
-          <div>
-            <h3 className="mt-2 -mb-1">Check in time</h3>
-            <input
-              type="text"
-              value={checkIn}
-              onChange={(ev) => setCheckIn(ev.target.value)}
-              placeholder="14"
-            />
-          </div>
-          <div>
-            <h3 className="mt-2 -mb-1">Check out time</h3>
-            <input
-              type="text"
-              value={checkOut}
-              onChange={(ev) => setCheckOut(ev.target.value)}
-              placeholder="11"
-            />
-          </div>
-          <div>
-            <h3 className="mt-2 -mb-1">Max number of guests</h3>
-            <input
-              type="number"
-              value={maxGuests}
-              onChange={(ev) => setMaxGuests(ev.target.value)}
-            />
-          </div>
-          <div>
-            <h3 className="mt-2 -mb-1">Price per night</h3>
-            <input
-              type="number"
-              value={price}
-              onChange={(ev) => setPrice(ev.target.value)}
-            />
-          </div>
-        </div>
-        <button className="primary my-4">Save</button>
-      </form>
-    </div>
+      <Paper sx={{ p: 3, mt: 2 }}>
+        <Box component="form" onSubmit={savePlace}>
+          {preInput(
+            "Title",
+            "Title for your place. should be short and catchy as in advertisement"
+          )}
+          <TextField
+            fullWidth
+            margin="normal"
+            label="Title"
+            type="text"
+            value={title}
+            onChange={(ev) => setTitle(ev.target.value)}
+            placeholder="My lovely apt"
+          />
+
+          {preInput("Address", "Address to this place")}
+          <TextField
+            fullWidth
+            margin="normal"
+            label="Address"
+            type="text"
+            value={address}
+            onChange={(ev) => setAddress(ev.target.value)}
+            placeholder="Address"
+          />
+
+          {preInput("Photos", "more = better")}
+          <Box mt={1}>
+            <PhotosUploader addedPhotos={addedPhotos} onChange={setAddedPhotos} />
+          </Box>
+
+          {preInput("Description", "Description of the place")}
+          <TextField
+            fullWidth
+            margin="normal"
+            label="Description"
+            multiline
+            minRows={3}
+            value={description}
+            onChange={(ev) => setDescription(ev.target.value)}
+          />
+
+          {preInput("Perks", "Select all the perks of your place")}
+          <Box mt={1}>
+            <Perks selected={perks} onChange={setPerks} />
+          </Box>
+
+          {preInput("Extra info", "House rules, etc")}
+          <TextField
+            fullWidth
+            margin="normal"
+            label="Extra info"
+            multiline
+            minRows={3}
+            value={extraInfo}
+            onChange={(ev) => setExtraInfo(ev.target.value)}
+          />
+
+          {preInput(
+            "Check in & out times",
+            "Add check in and out times, remember to have some time window for cleaning the room between guests"
+          )}
+          <Grid container spacing={2} sx={{ mt: 1 }}>
+            <Grid item xs={12} sm={6} md={3}>
+              <TextField
+                fullWidth
+                margin="dense"
+                label="Check in time"
+                type="text"
+                value={checkIn}
+                onChange={(ev) => setCheckIn(ev.target.value)}
+                placeholder="14"
+              />
+            </Grid>
+            <Grid item xs={12} sm={6} md={3}>
+              <TextField
+                fullWidth
+                margin="dense"
+                label="Check out time"
+                type="text"
+                value={checkOut}
+                onChange={(ev) => setCheckOut(ev.target.value)}
+                placeholder="11"
+              />
+            </Grid>
+            <Grid item xs={12} sm={6} md={3}>
+              <TextField
+                fullWidth
+                margin="dense"
+                label="Max number of guests"
+                type="number"
+                value={maxGuests}
+                onChange={(ev) => setMaxGuests(ev.target.value)}
+              />
+            </Grid>
+            <Grid item xs={12} sm={6} md={3}>
+              <TextField
+                fullWidth
+                margin="dense"
+                label="Price per night"
+                type="number"
+                value={price}
+                onChange={(ev) => setPrice(ev.target.value)}
+              />
+            </Grid>
+          </Grid>
+
+          <Button type="submit" sx={{ mt: 3 }}>
+            Save
+          </Button>
+        </Box>
+      </Paper>
+    </Box>
   );
 }
