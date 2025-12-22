@@ -12,10 +12,11 @@ import {
   Paper,
   Divider,
 } from "@mui/material";
+import { Place } from "../types";
 
 export default function PlacePage() {
-  const { id } = useParams();
-  const [place, setPlace] = useState(null);
+  const { id } = useParams<{ id: string }>();
+  const [place, setPlace] = useState<Place | null>(null);
 
   useEffect(() => {
     if (!id) return;
@@ -42,7 +43,7 @@ export default function PlacePage() {
         </Box>
 
         <Grid container spacing={4} mb={4}>
-          <Grid item xs={12} md={8}>
+          <Grid size={{ xs: 12, md: 8 }}>
             <Box mb={2}>
               <Typography variant="h5" gutterBottom>
                 Description
@@ -54,10 +55,10 @@ export default function PlacePage() {
               <br />
               Check-out: {place.checkOut}
               <br />
-              Max number of guests: {place.maxGuests}
+              Max number of guests: {place.maxGuest}
             </Typography>
           </Grid>
-          <Grid item xs={12} md={4}>
+          <Grid size={{ xs: 12, md: 4 }}>
             <BookingWidget place={place} />
           </Grid>
         </Grid>

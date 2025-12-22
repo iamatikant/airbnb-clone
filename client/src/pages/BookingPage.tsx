@@ -5,15 +5,16 @@ import AddressLink from "../AddressLink";
 import PlaceGallery from "../PlaceGallery";
 import BookingDates from "../BookingDates";
 import { Box, Typography, Paper } from "@mui/material";
+import { Booking } from "../types";
 
 export default function BookingPage() {
-  const { id } = useParams();
-  const [booking, setBooking] = useState(null);
+  const { id } = useParams<{ id: string }>();
+  const [booking, setBooking] = useState<Booking | null>(null);
 
   useEffect(() => {
     if (id) {
       axios.get("/bookings").then((response) => {
-        const foundBooking = response.data.find(({ _id }) => _id === id);
+        const foundBooking = response.data.find(({ _id }: Booking) => _id === id);
         if (foundBooking) {
           setBooking(foundBooking);
         }

@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { useContext, useState, FormEvent } from "react";
 import { Link, Navigate } from "react-router-dom";
 import { UserContext } from "../UserContext";
 import {
@@ -16,7 +16,7 @@ export default function LoginPage() {
   const [redirect, setRedirect] = useState(false);
   const { setUser } = useContext(UserContext);
 
-  const handleLoginSubmit = async (event) => {
+  const handleLoginSubmit = async (event: FormEvent) => {
     event.preventDefault();
     try {
       const response = await fetch("/login", {
@@ -33,7 +33,7 @@ export default function LoginPage() {
         setRedirect(true);
       } else throw new Error(jsonResponse);
     } catch (e) {
-      alert(e);
+      alert(String(e));
     }
   };
 

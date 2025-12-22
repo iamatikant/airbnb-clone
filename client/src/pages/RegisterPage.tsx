@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, FormEvent } from "react";
 import { Link } from "react-router-dom";
 import {
   Box,
@@ -14,7 +14,7 @@ export default function RegisterPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  async function registerUser(event) {
+  async function registerUser(event: FormEvent) {
     event.preventDefault();
     if (name === "" || email === "" || password === "") {
       alert("Please fill all the required fields");

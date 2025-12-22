@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import Image from "../Image.jsx";
+import Image from "../Image";
 import {
   Box,
   Grid,
@@ -9,9 +9,10 @@ import {
   CardContent,
   Typography,
 } from "@mui/material";
+import { Place } from "../types";
 
 export default function IndexPage() {
-  const [places, setPlaces] = useState([]);
+  const [places, setPlaces] = useState<Place[]>([]);
 
   useEffect(() => {
     const getPlaces = async () => {
@@ -40,7 +41,7 @@ export default function IndexPage() {
       <Grid container spacing={3}>
         {places.length > 0 &&
           places.map((place) => (
-            <Grid item xs={12} sm={6} md={4} key={place._id}>
+            <Grid size={{ xs: 12, sm: 6, md: 4 }} key={place._id}>
               <Card>
                 <CardActionArea component={Link} to={`/place/${place._id}`}>
                   {place.photos?.[0] && (
@@ -48,7 +49,7 @@ export default function IndexPage() {
                       <Image
                         src={place.photos[0]}
                         alt={place.title}
-                        style={{
+                        sx={{
                           position: "absolute",
                           top: 0,
                           left: 0,
