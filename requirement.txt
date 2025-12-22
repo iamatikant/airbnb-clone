@@ -1,0 +1,8 @@
+1. Payments --> after Paynow features
+2. Image and video uploading solution --> somethig like s3
+3. Redux integration --> 
+4. See if we can integrate any middleware like Thunk or Saga
+5. graphql
+6. CDN caching of images
+7. Booking dates availability chekcing before booking
+8. Design system implementation --> Material UI or Ant UI
