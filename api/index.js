@@ -36,7 +36,7 @@ app.use(cors(corsOptions));
 const bcryptSalt = bcrypt.genSaltSync(10);
 const jwtSecret = "this_is_jwt_secret";
 
-mongoose.connect(process.env.MONGO_URL);
+mongoose.connect(process.env.MONGODB_URL);
 
 function getUserDataFromReq(req) {
   return new Promise((resolve, reject) => {
