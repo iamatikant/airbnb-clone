@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, FormEvent } from "react";
 import PhotosUploader from "../PhotosUploader";
 import Perks from "../Perks";
 import AccountNav from "./AccountNav";
@@ -11,13 +11,14 @@ import {
   Grid,
   Paper,
 } from "@mui/material";
+import { Place } from "../types";
 
 export default function PlacesFormPage() {
   const [title, setTitle] = useState("");
   const [address, setAddress] = useState("");
-  const [addedPhotos, setAddedPhotos] = useState([]);
+  const [addedPhotos, setAddedPhotos] = useState<string[]>([]);
   const [description, setDescription] = useState("");
-  const [perks, setPerks] = useState([]);
+  const [perks, setPerks] = useState<string[]>([]);
   const [extraInfo, setExtraInfo] = useState("");
   const [checkIn, setCheckIn] = useState("");
   const [checkOut, setCheckOut] = useState("");
@@ -25,27 +26,28 @@ export default function PlacesFormPage() {
   const [price, setPrice] = useState(100);
   const [redirect, setRedirect] = useState(false);
 
-  const params = useParams();
+  const params = useParams<{ id: string }>();
   const id = params.id;
 
   useEffect(() => {
     const getPlace = async () => {
+      if (!id) return;
       const response = await fetch("/places/" + id, {
         method: "GET",
       });
       if (!response.ok) {
         console.log(response);
       }
-      const data = await response.json();
+      const data: Place = await response.json();
       setTitle(data.title);
       setAddress(data.address);
       setAddedPhotos(data.photos);
       setDescription(data.description);
       setPerks(data.perks);
       setExtraInfo(data.extraInfo);
-      setCheckIn(data.checkIn);
-      setCheckOut(data.checkOut);
-      setMaxGuests(data.maxGuests);
+      setCheckIn(data.checkIn.toString());
+      setCheckOut(data.checkOut.toString());
+      setMaxGuests(data.maxGuest);
       setPrice(data.price);
     };
     if (id) {
@@ -53,21 +55,21 @@ export default function PlacesFormPage() {
     }
   }, [id]);
 
-  function inputHeader(text) {
+  function inputHeader(text: string) {
     return (
       <Typography variant="h6" sx={{ mt: 3 }}>
         {text}
       </Typography>
     );
   }
-  function inputDescription(text) {
+  function inputDescription(text: string) {
     return (
       <Typography variant="body2" color="text.secondary">
         {text}
       </Typography>
     );
   }
-  function preInput(header, description) {
+  function preInput(header: string, description: string) {
     return (
       <Box mt={2}>
         {inputHeader(header)}
@@ -76,7 +78,7 @@ export default function PlacesFormPage() {
     );
   }
 
-  async function savePlace(ev) {
+  async function savePlace(ev: FormEvent) {
     ev.preventDefault();
     const placeData = {
       title,
@@ -197,7 +199,7 @@ export default function PlacesFormPage() {
             "Add check in and out times, remember to have some time window for cleaning the room between guests"
           )}
           <Grid container spacing={2} sx={{ mt: 1 }}>
-            <Grid item xs={12} sm={6} md={3}>
+            <Grid size={{ xs: 12, sm: 6, md: 3 }}>
               <TextField
                 fullWidth
                 margin="dense"
@@ -208,7 +210,7 @@ export default function PlacesFormPage() {
                 placeholder="14"
               />
             </Grid>
-            <Grid item xs={12} sm={6} md={3}>
+            <Grid size={{ xs: 12, sm: 6, md: 3 }}>
               <TextField
                 fullWidth
                 margin="dense"
@@ -219,24 +221,24 @@ export default function PlacesFormPage() {
                 placeholder="11"
               />
             </Grid>
-            <Grid item xs={12} sm={6} md={3}>
+            <Grid size={{ xs: 12, sm: 6, md: 3 }}>
               <TextField
                 fullWidth
                 margin="dense"
                 label="Max number of guests"
                 type="number"
                 value={maxGuests}
-                onChange={(ev) => setMaxGuests(ev.target.value)}
+                onChange={(ev) => setMaxGuests(Number(ev.target.value))}
               />
             </Grid>
-            <Grid item xs={12} sm={6} md={3}>
+            <Grid size={{ xs: 12, sm: 6, md: 3 }}>
               <TextField
                 fullWidth
                 margin="dense"
                 label="Price per night"
                 type="number"
                 value={price}
-                onChange={(ev) => setPrice(ev.target.value)}
+                onChange={(ev) => setPrice(Number(ev.target.value))}
               />
             </Grid>
           </Grid>

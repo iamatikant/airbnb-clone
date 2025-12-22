@@ -11,9 +11,10 @@ import {
   CardContent,
   Grid,
 } from "@mui/material";
+import { Place } from "../types";
 
 export const PlacesPage = () => {
-  const [places, setPlaces] = useState([]);
+  const [places, setPlaces] = useState<Place[]>([]);
 
   useEffect(() => {
     const fetchPlaces = async () => {
@@ -65,7 +66,7 @@ export const PlacesPage = () => {
         <Grid container spacing={2}>
           {places.length > 0 &&
             places.map((place) => (
-              <Grid item xs={12} key={place._id}>
+              <Grid size={12} key={place._id}>
                 <Card>
                   <CardActionArea component={Link} to={`/account/places/${place._id}`}>
                     <Box

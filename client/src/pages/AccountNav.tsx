@@ -9,7 +9,7 @@ export default function AccountNav() {
     subpage = "profile";
   }
 
-  const isActive = (type) => subpage === type;
+  const isActive = (type: string) => subpage === type;
 
   return (
     <Box

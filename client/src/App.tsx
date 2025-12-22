@@ -1,4 +1,4 @@
-import "./App.css";
+
 
 import { Route, Routes } from "react-router-dom";
 import IndexPage from "./pages/IndexPage";
@@ -22,35 +22,26 @@ import TransactionDetails from "./pages/TransactionDetails";
 
 export const baseUrl = "http://localhost:4000";
 
-window.originalFetch = window.fetch;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+(window as any).originalFetch = window.fetch;
 
-window.fetch = async (url, options) => {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+window.fetch = async (url: RequestInfo | URL, options?: RequestInit) => {
   const defaultOptions = {
-    credentials: "include",
+    credentials: "include" as const,
   };
-  return window.originalFetch(`${baseUrl}${url}`, {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return (window as any).originalFetch(`${baseUrl}${url}`, {
     ...defaultOptions,
     ...options,
   });
 };
 
-// window.originalFetch = window.fetch;
-
-// window.fetch = async (url, options) => {
-//   const defaultOptions = {
-//     credentials: "include",
-//   };
-//   return window.originalFetch(`${baseUrl}${url}`, {
-//     ...defaultOptions,
-//     ...options,
-//   });
-// };
-
 axios.defaults.baseURL = "http://localhost:4000";
 axios.defaults.withCredentials = true;
 
 // user: booking
-// MongoDBkey: DCcAqsnXmhLiesbe
+// MongoDBpassword: abhishek
 
 function App() {
   return (

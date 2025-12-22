@@ -7,9 +7,9 @@ import { Box, Typography, Button, CircularProgress } from "@mui/material";
 
 export default function ProfilePage() {
   const { user, ready, setUser } = useContext(UserContext);
-  const [redirect, setRedirect] = useState(null);
+  const [redirect, setRedirect] = useState<string | null>(null);
 
-  const params = useParams();
+  const params = useParams<{ subpage: string }>();
   let subpage = params?.subpage;
 
   if (subpage === undefined) {
