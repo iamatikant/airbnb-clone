@@ -11,6 +11,7 @@ const cookieParser = require("cookie-parser");
 const imageDownloader = require("image-downloader");
 const multer = require("multer");
 const fs = require("fs");
+const cloudinary = require("cloudinary").v2;
 
 const app = express();
 app.use(express.json());
@@ -36,7 +37,29 @@ app.use(cors(corsOptions));
 const bcryptSalt = bcrypt.genSaltSync(10);
 const jwtSecret = "this_is_jwt_secret";
 
-mongoose.connect(process.env.MONGODB_URL);
+// Cloudinary Configuration
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
+
+// MongoDB Connection with logging
+mongoose.connect(process.env.MONGO_URL || process.env.MONGODB_URL);
+
+// Connection event handlers
+mongoose.connection.on('connected', () => {
+  console.log('✅ MongoDB connected successfully!');
+  console.log(`📊 Database: ${mongoose.connection.name}`);
+});
+
+mongoose.connection.on('error', (err) => {
+  console.error('❌ MongoDB connection error:', err);
+});
+
+mongoose.connection.on('disconnected', () => {
+  console.log('⚠️  MongoDB disconnected');
+});
 
 function getUserDataFromReq(req) {
   return new Promise((resolve, reject) => {
@@ -123,29 +146,46 @@ app.post("/logout", (req, res) => {
 
 app.post("/upload-by-link", async (req, res) => {
   const { link } = req.body;
-  const newName = "photos" + Date.now() + ".jpg";
   try {
-    const response = await imageDownloader.image({
-      url: link,
-      dest: __dirname + "/uploads/" + newName,
+    // Upload image from URL directly to Cloudinary
+    const result = await cloudinary.uploader.upload(link, {
+      folder: "airbnb-clone",
+      resource_type: "image",
     });
-    res.json(newName);
+    // Return the secure URL (full Cloudinary URL)
+    res.json(result.secure_url);
   } catch (err) {
-    res.status(422).json(err);
+    console.error("Cloudinary upload error:", err);
+    res.status(422).json({ error: err.message });
   }
 });
 
-app.post("/upload", photosMiddleware.array("photos", 100), (req, res) => {
-  const uploadedFiles = [];
-  for (let i = 0; i < req.files.length; i++) {
-    const { path, originalname } = req.files[i];
-    const parts = originalname.split(".");
-    const ext = parts[parts.length - 1];
-    const newPath = path + "." + ext;
-    fs.renameSync(path, newPath);
-    uploadedFiles.push(newPath.replace("uploads/", ""));
+app.post("/upload", photosMiddleware.array("photos", 100), async (req, res) => {
+  try {
+    const uploadedFiles = [];
+
+    // Upload each file to Cloudinary
+    for (let i = 0; i < req.files.length; i++) {
+      const { path } = req.files[i];
+
+      // Upload to Cloudinary
+      const result = await cloudinary.uploader.upload(path, {
+        folder: "airbnb-clone",
+        resource_type: "image",
+      });
+
+      // Store the secure URL (full Cloudinary URL)
+      uploadedFiles.push(result.secure_url);
+
+      // Clean up: delete the temporary local file
+      fs.unlinkSync(path);
+    }
+
+    res.json(uploadedFiles);
+  } catch (err) {
+    console.error("Cloudinary upload error:", err);
+    res.status(422).json({ error: err.message });
   }
-  res.json(uploadedFiles);
 });
 
 app.post("/places", async (req, res) => {
@@ -300,4 +340,8 @@ app.get("/bookings", async (req, res) => {
   res.json(await Booking.find({ user: userData.id }).populate("place"));
 });
 
-app.listen(4000);
+const PORT = process.env.PORT || 4000;
+app.listen(PORT, () => {
+  console.log(`🚀 Server is running on http://localhost:${PORT}`);
+  console.log(`📡 Test endpoint: http://localhost:${PORT}/test`);
+});

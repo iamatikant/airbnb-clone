@@ -4,10 +4,12 @@ import axios from "axios";
 import AddressLink from "../AddressLink";
 import PlaceGallery from "../PlaceGallery";
 import BookingDates from "../BookingDates";
+import { Box, Typography, Paper } from "@mui/material";
 
 export default function BookingPage() {
   const { id } = useParams();
   const [booking, setBooking] = useState(null);
+
   useEffect(() => {
     if (id) {
       axios.get("/bookings").then((response) => {
@@ -24,20 +26,49 @@ export default function BookingPage() {
   }
 
   return (
-    <div className="my-8">
-      <h1 className="text-3xl">{booking.place.title}</h1>
-      <AddressLink className="my-2 block">{booking.place.address}</AddressLink>
-      <div className="bg-gray-200 p-6 my-6 rounded-2xl flex items-center justify-between">
-        <div>
-          <h2 className="text-2xl mb-4">Your booking information:</h2>
+    <Box sx={{ my: 4 }}>
+      <Typography variant="h4" gutterBottom>
+        {booking.place.title}
+      </Typography>
+      <Box my={1}>
+        <AddressLink>{booking.place.address}</AddressLink>
+      </Box>
+      <Paper
+        sx={{
+          p: 3,
+          my: 3,
+          borderRadius: 3,
+          display: "flex",
+          flexDirection: { xs: "column", md: "row" },
+          justifyContent: "space-between",
+          alignItems: { xs: "flex-start", md: "center" },
+          gap: 2,
+        }}
+        elevation={0}
+        variant="outlined"
+      >
+        <Box>
+          <Typography variant="h5" gutterBottom>
+            Your booking information:
+          </Typography>
           <BookingDates booking={booking} />
-        </div>
-        <div className="bg-primary p-6 text-white rounded-2xl">
-          <div>Total price</div>
-          <div className="text-3xl">${booking.price}</div>
-        </div>
-      </div>
+        </Box>
+        <Box
+          sx={{
+            bgcolor: "primary.main",
+            color: "common.white",
+            p: 3,
+            borderRadius: 3,
+            minWidth: 220,
+          }}
+        >
+          <Typography variant="body2">Total price</Typography>
+          <Typography variant="h4" fontWeight="bold">
+            ${booking.price}
+          </Typography>
+        </Box>
+      </Paper>
       <PlaceGallery place={booking.place} />
-    </div>
+    </Box>
   );
 }
