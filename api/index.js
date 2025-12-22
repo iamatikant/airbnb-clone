@@ -12,6 +12,7 @@ const imageDownloader = require("image-downloader");
 const multer = require("multer");
 const fs = require("fs");
 const cloudinary = require("cloudinary").v2;
+const Razorpay = require('razorpay');
 
 const app = express();
 app.use(express.json());
@@ -42,6 +43,12 @@ cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
   api_key: process.env.CLOUDINARY_API_KEY,
   api_secret: process.env.CLOUDINARY_API_SECRET,
+});
+
+// Razorpay configuration
+const razorpay = new Razorpay({
+  key_id: process.env.RAZORPAY_KEY_ID,
+  key_secret: process.env.RAZORPAY_KEY_SECRET,
 });
 
 // MongoDB Connection with logging
@@ -332,6 +339,40 @@ app.post("/bookings", async (req, res) => {
     res.json(booking);
   } catch (err) {
     res.status(404).json(err);
+  }
+});
+
+// Create Razorpay order and return order details for client-side checkout
+app.post('/create-checkout-session', async (req, res) => {
+  try {
+    const { amount, currency = 'INR', receipt = `rcpt_${Date.now()}`, notes = {} } = req.body;
+
+    if (!amount || Number(amount) <= 0) {
+      return res.status(400).json({ error: 'Invalid amount' });
+    }
+
+    const options = {
+      amount: Number(amount), // amount in paise (if INR) or smallest currency unit
+      currency,
+      receipt,
+      payment_capture: 1,
+      notes,
+    };
+
+    const order = await razorpay.orders.create(options);
+
+    // Return order details and key id so client can open checkout
+    res.json({
+      id: order.id,
+      amount: order.amount,
+      currency: order.currency,
+      receipt: order.receipt,
+      key: process.env.RAZORPAY_KEY_ID,
+      order,
+    });
+  } catch (err) {
+    console.error('Razorpay create order error:', err);
+    res.status(500).json({ error: err.message });
   }
 });
 
