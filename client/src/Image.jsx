@@ -3,7 +3,7 @@ import { useState } from "react";
 
 export default function Image({ src, ...rest }) {
   const [imageError, setImageError] = useState(false);
-  
+
   if (!src) {
     return (
       <div className="bg-gray-200 flex items-center justify-center" {...rest}>
