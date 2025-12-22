@@ -9,7 +9,6 @@ const Place = require("./models/Place");
 const Booking = require("./models/Booking");
 const Transaction = require("./models/Transaction");
 const cookieParser = require("cookie-parser");
-const imageDownloader = require("image-downloader");
 const multer = require("multer");
 const fs = require("fs");
 const cloudinary = require("cloudinary").v2;
@@ -19,8 +18,6 @@ const app = express();
 app.use(express.json());
 app.use(cookieParser());
 const photosMiddleware = multer({ dest: "uploads/" });
-
-app.use("/uploads", express.static(__dirname + "/uploads"));
 
 const whitelist = ["http://localhost:5173"]; // Add your localhost URL
 const corsOptions = {
