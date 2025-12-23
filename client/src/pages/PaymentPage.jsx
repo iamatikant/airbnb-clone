@@ -71,7 +71,7 @@ export default function PaymentPage() {
                 description: description,
                 order_id: data.id,
                 handler: async function (res) {
-                    // On success: notify server to verify & update transaction, then redirect
+                    // On success: notify server to verify & update transaction, then navigate with state
                     try {
                         await fetch('/transactions/verify', {
                             method: 'POST',
@@ -84,22 +84,19 @@ export default function PaymentPage() {
                             }),
                         });
 
-                        // store details in history state and go to success page
-                        window.history.replaceState({
-                            payment_id: res.razorpay_payment_id,
-                            order_id: res.razorpay_order_id,
-                            signature: res.razorpay_signature,
-                            amount: data.amount || payload.amount,
-                            transactionId,
-                        }, '');
-
-                        window.location.href = `/payment/success`;
+                        // navigate to success page passing state (reliable in React Router)
+                        navigate('/payment/success', {
+                            state: {
+                                payment_id: res.razorpay_payment_id,
+                                order_id: res.razorpay_order_id,
+                                signature: res.razorpay_signature,
+                                amount: data.amount || payload.amount,
+                                transactionId,
+                            },
+                        });
                     } catch (e) {
                         console.error('Verification failed:', e);
-                        try {
-                            window.history.replaceState({ error: 'Payment verification failed' }, '');
-                        } catch (err) { }
-                        window.location.href = '/payment/failure';
+                        navigate('/payment/failure', { state: { error: 'Payment verification failed', transactionId } });
                     }
                 },
                 modal: {
@@ -119,12 +116,8 @@ export default function PaymentPage() {
                             console.error('Failed to mark transaction cancelled', e);
                         }
 
-                        try {
-                            window.location.href = '/payment/failure';
-                            window.history.replaceState({ error: 'Checkout was closed by user' }, '');
-                        } catch (e) {
-                            console.log('Checkout closed by user');
-                        }
+                        // navigate to failure page and pass cancellation reason
+                        navigate('/payment/failure', { state: { error: 'Checkout was closed by user', transactionId } });
                     },
                 },
                 prefill: {
