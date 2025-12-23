@@ -2,6 +2,15 @@ import { Link } from "react-router-dom";
 import AccountNav from "./AccountNav";
 import { useEffect, useState } from "react";
 import PlaceImg from "../PlaceImg";
+import {
+  Box,
+  Button,
+  Typography,
+  Card,
+  CardActionArea,
+  CardContent,
+  Grid,
+} from "@mui/material";
 
 export const PlacesPage = () => {
   const [places, setPlaces] = useState([]);
@@ -24,54 +33,81 @@ export const PlacesPage = () => {
   }, []);
 
   return (
-    <div>
+    <Box>
       <AccountNav />
-      <div className="text-center">
-        <ul>
-          {places.map((place) => {
-            return <li key={place.title}>{place.title}</li>;
-          })}
-        </ul>
-        <br />
-        <Link
-          className="inline-flex gap-1 bg-primary text-white py-2 px-6 rounded-full"
+      <Box textAlign="center" mt={2} mb={2}>
+        <Button
+          component={Link}
           to="/account/places/new"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            strokeWidth={1.5}
-            stroke="currentColor"
-            className="w-6 h-6"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M12 4.5v15m7.5-7.5h-15"
-            />
-          </svg>
-          Add new place
-        </Link>
-      </div>
-      <div className="mt-4">
-        {places.length > 0 &&
-          places.map((place) => (
-            <Link
-              key={place.id}
-              to={"/account/places/" + place._id}
-              className="flex cursor-pointer gap-4 bg-gray-100 p-4 rounded-2xl mb-4"
+          startIcon={
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth={1.5}
+              stroke="currentColor"
+              width={24}
+              height={24}
             >
-              <div className="flex w-32 h-32 bg-gray-300 shrink-0">
-                <PlaceImg place={place} />
-              </div>
-              <div className="grow-0 shrink">
-                <h2 className="text-xl">{place.title}</h2>
-                <p className="text-sm mt-2">{place.description}</p>
-              </div>
-            </Link>
-          ))}
-      </div>
-    </div>
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M12 4.5v15m7.5-7.5h-15"
+              />
+            </svg>
+          }
+        >
+          Add new place
+        </Button>
+      </Box>
+
+      <Box mt={3}>
+        <Grid container spacing={2}>
+          {places.length > 0 &&
+            places.map((place) => (
+              <Grid item xs={12} key={place._id}>
+                <Card>
+                  <CardActionArea component={Link} to={`/account/places/${place._id}`}>
+                    <Box
+                      sx={{
+                        display: "flex",
+                        gap: 2,
+                        p: 2,
+                        alignItems: "stretch",
+                      }}
+                    >
+                      <Box
+                        sx={{
+                          width: 128,
+                          height: 128,
+                          bgcolor: "grey.300",
+                          flexShrink: 0,
+                          borderRadius: 2,
+                          overflow: "hidden",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                        }}
+                      >
+                        <PlaceImg place={place} />
+                      </Box>
+                      <CardContent sx={{ p: 0, flexGrow: 1 }}>
+                        <Typography variant="h6">{place.title}</Typography>
+                        <Typography
+                          variant="body2"
+                          color="text.secondary"
+                          sx={{ mt: 1 }}
+                        >
+                          {place.description}
+                        </Typography>
+                      </CardContent>
+                    </Box>
+                  </CardActionArea>
+                </Card>
+              </Grid>
+            ))}
+        </Grid>
+      </Box>
+    </Box>
   );
 };

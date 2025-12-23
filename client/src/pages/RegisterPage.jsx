@@ -1,5 +1,13 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import {
+  Box,
+  Paper,
+  Typography,
+  TextField,
+  Button,
+  Stack,
+} from "@mui/material";
 
 export default function RegisterPage() {
   const [name, setName] = useState("");
@@ -8,8 +16,8 @@ export default function RegisterPage() {
 
   async function registerUser(event) {
     event.preventDefault();
-    if(name === '' || email === '' || password === '') {
-      alert('Please fill all the required fields');
+    if (name === "" || email === "" || password === "") {
+      alert("Please fill all the required fields");
       return;
     }
     try {
@@ -20,47 +28,78 @@ export default function RegisterPage() {
           "Content-Type": "application/json",
         },
       });
-      if(!response.ok) {
+      if (!response.ok) {
         throw new Error(await response.json());
       }
-      alert('User registered successfully', response);
-    } catch(e) {
-      alert('Some error occurred, make sure your email is unique', e);
+      alert("User registered successfully");
+    } catch (e) {
+      alert("Some error occurred, make sure your email is unique");
     }
   }
 
   return (
-    <div className="mt-4 grow flex items-center justify-around">
-      <div className="mb-64">
-        <h1 className="text-4xl text-center mb-4">Register</h1>
-        <form className="max-w-md mx-auto" onSubmit={registerUser}>
-          <input
-            type="text"
-            value={name}
-            onChange={(event) => setName(event.target.value)}
-            placeholder="name"
-          />
-          <input
-            type="email"
-            value={email}
-            onChange={(event) => setEmail(event.target.value)}
-            placeholder="youremail@email.com"
-          />
-          <input
-            type="password"
-            value={password}
-            onChange={(event) => setPassword(event.target.value)}
-            placeholder="password"
-          />
-          <button className="primary">Register</button>
-          <div className="text-gray-300 py-4 text-center">
-            Already registered?{" "}
-            <Link to="/login" className="underline text-black">
-              Login
-            </Link>
-          </div>
-        </form>
-      </div>
-    </div>
+    <Box
+      sx={{
+        mt: 4,
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        minHeight: "60vh",
+      }}
+    >
+      <Paper
+        elevation={3}
+        sx={{
+          p: 4,
+          maxWidth: 400,
+          width: "100%",
+        }}
+      >
+        <Typography variant="h4" align="center" gutterBottom>
+          Register
+        </Typography>
+        <Box component="form" onSubmit={registerUser}>
+          <Stack spacing={2}>
+            <TextField
+              type="text"
+              label="Name"
+              value={name}
+              onChange={(event) => setName(event.target.value)}
+              placeholder="Your name"
+              fullWidth
+            />
+            <TextField
+              type="email"
+              label="Email"
+              value={email}
+              onChange={(event) => setEmail(event.target.value)}
+              placeholder="youremail@email.com"
+              fullWidth
+            />
+            <TextField
+              type="password"
+              label="Password"
+              value={password}
+              onChange={(event) => setPassword(event.target.value)}
+              placeholder="password"
+              fullWidth
+            />
+            <Button type="submit" fullWidth>
+              Register
+            </Button>
+            <Typography
+              variant="body2"
+              color="text.secondary"
+              align="center"
+            >
+              Already registered?{" "}
+              <Link to="/login" style={{ color: "#000", textDecoration: "underline" }}>
+                Login
+              </Link>
+            </Typography>
+          </Stack>
+        </Box>
+      </Paper>
+    </Box>
   );
 }

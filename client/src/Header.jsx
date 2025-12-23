@@ -1,85 +1,132 @@
 import { useContext } from "react";
 import { Link } from "react-router-dom";
 import { UserContext } from "./UserContext";
+import {
+  AppBar,
+  Toolbar,
+  Box,
+  Typography,
+  IconButton,
+  Paper,
+  Button,
+} from "@mui/material";
+import SearchIcon from "@mui/icons-material/Search";
+import MenuIcon from "@mui/icons-material/Menu";
+import AccountCircleIcon from "@mui/icons-material/AccountCircle";
+
 export default function Header() {
   const { user } = useContext(UserContext);
+
   return (
-    <header className="justify-between flex">
-      <Link to="/" className="flex items-center gap-1">
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-          strokeWidth="1.5"
-          stroke="currentColor"
-          className="w-8 h-8 -rotate-90"
+    <AppBar position="static" color="default" elevation={1}>
+      <Toolbar sx={{ justifyContent: "space-between" }}>
+        {/* Brand / Logo */}
+        <Box
+          component={Link}
+          to="/"
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            textDecoration: "none",
+            color: "inherit",
+            gap: 1,
+          }}
         >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            d="M6 12 3.269 3.125A59.769 59.769 0 0 1 21.485 12 59.768 59.768 0 0 1 3.27 20.875L5.999 12Zm0 0h7.5"
-          />
-        </svg>
-        <span className="font-bold text-xl">airbnb</span>
-      </Link>
-      <div className="flex border gap-2 border-gray-100 rounded-full px-2 py-4 shadow-md shadow-gray-300">
-        <div>Anywhere</div>
-        <div className="border-l border-gray-300"></div>
-        <div>Any week</div>
-        <div className="border-l border-gray-300"></div>
-        <div>Add guests</div>
-        <button className="bg-primary text-white p-1 rounded-full">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            strokeWidth="1.5"
-            stroke="currentColor"
-            className="w-4 h-4"
+          <Box
+            component="span"
+            sx={{
+              width: 32,
+              height: 32,
+              transform: "rotate(-90deg)",
+              display: "inline-flex",
+            }}
           >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"
-            />
-          </svg>
-        </button>
-      </div>
-      <Link
-        to={user ? "/account" : "/login"}
-        className="flex border items-center border-gray-300 gap-2 rounded-full px-4 py-2"
-      >
-        {console.log("user in header: ", user)}
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-          strokeWidth="1.5"
-          stroke="currentColor"
-          className="w-6 h-6"
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth="1.5"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M6 12 3.269 3.125A59.769 59.769 0 0 1 21.485 12 59.768 59.768 0 0 1 3.27 20.875L5.999 12Zm0 0h7.5"
+              />
+            </svg>
+          </Box>
+          <Typography variant="h6" fontWeight="bold">
+            airbnb
+          </Typography>
+        </Box>
+
+        {/* Search bar */}
+        <Paper
+          elevation={2}
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            gap: 2,
+            px: 2,
+            py: 1,
+            borderRadius: 999,
+          }}
         >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"
+          <Typography variant="body2">Anywhere</Typography>
+          <Box
+            sx={{
+              width: 1,
+              height: 24,
+              borderLeft: "1px solid",
+              borderColor: "divider",
+            }}
           />
-        </svg>
-        <div className="bg-gray-500 text-white rounded-full border border-gray-500 overflow-hidden">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 24 24"
-            fill="currentColor"
-            className="w-6 h-6 relative top-1"
+          <Typography variant="body2">Any week</Typography>
+          <Box
+            sx={{
+              width: 1,
+              height: 24,
+              borderLeft: "1px solid",
+              borderColor: "divider",
+            }}
+          />
+          <Typography variant="body2">Add guests</Typography>
+          <IconButton
+            size="small"
+            sx={{
+              bgcolor: "primary.main",
+              color: "common.white",
+              "&:hover": { bgcolor: "primary.dark" },
+            }}
           >
-            <path
-              fillRule="evenodd"
-              d="M7.5 6a4.5 4.5 0 1 1 9 0 4.5 4.5 0 0 1-9 0ZM3.751 20.105a8.25 8.25 0 0 1 16.498 0 .75.75 0 0 1-.437.695A18.683 18.683 0 0 1 12 22.5c-2.786 0-5.433-.608-7.812-1.7a.75.75 0 0 1-.437-.695Z"
-              clipRule="evenodd"
-            />
-          </svg>
-        </div>
-        {!!user && <div>{user.name}</div>}
-      </Link>
-    </header>
+            <SearchIcon fontSize="small" />
+          </IconButton>
+        </Paper>
+
+        {/* User menu */}
+        <Button
+          component={Link}
+          to={user ? "/account" : "/login"}
+          variant="outlined"
+          sx={{
+            borderRadius: 999,
+            px: 2,
+            py: 0.5,
+            textTransform: "none",
+            display: "flex",
+            alignItems: "center",
+            gap: 1,
+          }}
+        >
+          <MenuIcon fontSize="small" />
+          <AccountCircleIcon />
+          {!!user && (
+            <Typography variant="body2" noWrap>
+              {user.name}
+            </Typography>
+          )}
+        </Button>
+      </Toolbar>
+    </AppBar>
   );
 }

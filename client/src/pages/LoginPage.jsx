@@ -1,6 +1,14 @@
 import { useContext, useState } from "react";
 import { Link, Navigate } from "react-router-dom";
 import { UserContext } from "../UserContext";
+import {
+  Box,
+  Paper,
+  Typography,
+  TextField,
+  Button,
+  Stack,
+} from "@mui/material";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("sujesh@gmail.com");
@@ -30,37 +38,65 @@ export default function LoginPage() {
   };
 
   if (redirect) {
-    // setRedirect(false);
     return <Navigate to={"/"} />;
   }
 
   return (
-    <div className="mt-4 grow flex items-center justify-around">
-      <div className="mb-64">
-        <h1 className="text-4xl text-center mb-4">Login</h1>
-        <form className="max-w-md mx-auto" onSubmit={handleLoginSubmit}>
-          <input
-            type="email"
-            placeholder="youremail@email.com"
-            value={email}
-            onChange={(ev) => setEmail(ev.target.value)}
-          />
-          <input
-            type="password"
-            placeholder="password"
-            value={password}
-            onChange={(ev) => setPassword(ev.target.value)}
-          />
-          <button className="primary">Login</button>
-          <div className="text-gray-300 py-4 text-center">
-            {/* eslint-disable-next-line react/no-unescaped-entities*/}
-            Don't have an account yet?{" "}
-            <Link to="/register" className="underline text-black">
-              Register
-            </Link>
-          </div>
-        </form>
-      </div>
-    </div>
+    <Box
+      sx={{
+        mt: 4,
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        minHeight: "60vh",
+      }}
+    >
+      <Paper
+        elevation={3}
+        sx={{
+          p: 4,
+          maxWidth: 400,
+          width: "100%",
+        }}
+      >
+        <Typography variant="h4" align="center" gutterBottom>
+          Login
+        </Typography>
+        <Box component="form" onSubmit={handleLoginSubmit}>
+          <Stack spacing={2}>
+            <TextField
+              type="email"
+              label="Email"
+              placeholder="youremail@email.com"
+              value={email}
+              onChange={(ev) => setEmail(ev.target.value)}
+              fullWidth
+            />
+            <TextField
+              type="password"
+              label="Password"
+              placeholder="password"
+              value={password}
+              onChange={(ev) => setPassword(ev.target.value)}
+              fullWidth
+            />
+            <Button type="submit" fullWidth>
+              Login
+            </Button>
+            <Typography
+              variant="body2"
+              color="text.secondary"
+              align="center"
+            >
+              {/* eslint-disable-next-line react/no-unescaped-entities*/}
+              Don't have an account yet?{" "}
+              <Link to="/register" style={{ color: "#000", textDecoration: "underline" }}>
+                Register
+              </Link>
+            </Typography>
+          </Stack>
+        </Box>
+      </Paper>
+    </Box>
   );
 }
