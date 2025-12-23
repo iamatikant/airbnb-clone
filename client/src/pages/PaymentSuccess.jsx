@@ -44,6 +44,9 @@ export default function PaymentSuccess() {
                     <Box sx={{ display: 'flex', gap: 2, mt: 2 }}>
                         <Button variant="contained" component={Link} to="/">Return home</Button>
                         <Button variant="outlined" component={Link} to="/account/bookings">View bookings</Button>
+                        {transactionId && (
+                            <Button variant="text" component={Link} to={`/account/transactions/${transactionId}`}>View transaction</Button>
+                        )}
                     </Box>
                 </Stack>
             </Paper>

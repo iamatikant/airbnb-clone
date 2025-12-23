@@ -57,6 +57,7 @@ export default function PaymentPage() {
             }
 
             const data = await response.json();
+            const transactionId = data.transactionId || null;
 
             if (!data || !data.id || !data.key) {
                 throw new Error('Invalid order data from server');
@@ -69,25 +70,55 @@ export default function PaymentPage() {
                 name: 'Airbnb Clone',
                 description: description,
                 order_id: data.id,
-                handler: function (res) {
-                    // On success, redirect to success page with details in state
-                    // res contains razorpay_payment_id, razorpay_order_id, razorpay_signature
-                    window.location.href = `/payment/success`;
+                handler: async function (res) {
+                    // On success: notify server to verify & update transaction, then redirect
                     try {
-                        // use history state to store details if available
+                        await fetch('/transactions/verify', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                payment_id: res.razorpay_payment_id,
+                                order_id: res.razorpay_order_id,
+                                signature: res.razorpay_signature,
+                                status: 'success',
+                            }),
+                        });
+
+                        // store details in history state and go to success page
                         window.history.replaceState({
                             payment_id: res.razorpay_payment_id,
                             order_id: res.razorpay_order_id,
                             signature: res.razorpay_signature,
                             amount: data.amount || payload.amount,
+                            transactionId,
                         }, '');
+
+                        window.location.href = `/payment/success`;
                     } catch (e) {
-                        // fallback: do nothing
+                        console.error('Verification failed:', e);
+                        try {
+                            window.history.replaceState({ error: 'Payment verification failed' }, '');
+                        } catch (err) { }
+                        window.location.href = '/payment/failure';
                     }
                 },
                 modal: {
-                    ondismiss: function () {
-                        // user closed the checkout -> treat as cancelled
+                    ondismiss: async function () {
+                        // user closed the checkout -> mark transaction as cancelled
+                        try {
+                            await fetch('/transactions/verify', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({
+                                    order_id: data.id,
+                                    status: 'cancelled',
+                                    error: 'Checkout was closed by user',
+                                }),
+                            });
+                        } catch (e) {
+                            console.error('Failed to mark transaction cancelled', e);
+                        }
+
                         try {
                             window.location.href = '/payment/failure';
                             window.history.replaceState({ error: 'Checkout was closed by user' }, '');

@@ -17,6 +17,8 @@ import BookingPage from "./pages/BookingPage";
 import PaymentPage from "./pages/PaymentPage";
 import PaymentSuccess from "./pages/PaymentSuccess";
 import PaymentFail from "./pages/PaymentFail";
+import TransactionsPage from "./pages/TransactionsPage";
+import TransactionDetails from "./pages/TransactionDetails";
 
 export const baseUrl = "http://localhost:4000";
 
@@ -68,6 +70,8 @@ function App() {
           <Route path="/pay" element={<PaymentPage />} />
           <Route path="/payment/success" element={<PaymentSuccess />} />
           <Route path="/payment/failure" element={<PaymentFail />} />
+          <Route path="/account/transactions" element={<TransactionsPage />} />
+          <Route path="/account/transactions/:id" element={<TransactionDetails />} />
         </Route>
       </Routes>
     </UserContextProvider>
